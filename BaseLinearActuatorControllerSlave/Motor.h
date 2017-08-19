@@ -16,7 +16,6 @@ class Motor {
     void setPinSpeed();
   
   public:
-    int id;
     int motorSpeed;
     bool isMovingForward = false;
     bool isMovingBackward = false;
@@ -33,7 +32,7 @@ class Motor {
     bool isFlagged();
     void prepareCommand(int, int);
     void executePreparedCommand();
-    Motor(int, int, int, int);
+    Motor(int, int, int);
     ~Motor();
 };
 

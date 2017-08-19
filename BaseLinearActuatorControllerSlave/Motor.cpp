@@ -1,11 +1,10 @@
 #include <Arduino.h>
 #include "Motor.h"
 
-Motor::Motor(int id, int pinEnable, int pinDrive1, int pinDrive2) {
+Motor::Motor(int pinEnable, int pinDrive1, int pinDrive2) {
   // motorSpeed set to a percentage of max voltage to pins
   this->motorSpeed = 0;
   this->encoderTickCount = 0;
-  this->id = id;
   this->pinEnable = pinEnable;
   this->pinDrive1 = pinDrive1;
   this->pinDrive2 = pinDrive2;
