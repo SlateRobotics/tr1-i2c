@@ -6,7 +6,7 @@
 Motor motor(2, 3, 4);
 
 void setup() {
-  Wire.begin(0x80);
+  Wire.begin(0x71);
   Wire.onReceive(receiveEvent);
   Serial.begin(115200);
   Serial.println("Ready");
