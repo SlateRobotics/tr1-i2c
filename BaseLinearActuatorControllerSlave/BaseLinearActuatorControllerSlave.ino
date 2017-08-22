@@ -1,7 +1,6 @@
 #include <Wire.h>
 #include "Motor.h"
 
-// front-left, front-right, etc -- from robot's perspective
 // Motor::Motor(int pinEnable, int pinDrive1, int pinDrive2);
 Motor motor(2, 3, 4);
 
@@ -15,7 +14,6 @@ void setup() {
 }
 
 void loop() {
-  // these execute if a command has been flagged/prepared
   motor.executePreparedCommand();
 }
 
