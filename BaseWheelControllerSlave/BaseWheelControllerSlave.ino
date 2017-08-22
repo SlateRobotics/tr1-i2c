@@ -22,14 +22,10 @@ void setup() {
 
 void loop() {
   // these execute if a command has been flagged/prepared
-//  motorFL.executePreparedCommand();
-//  motorFR.executePreparedCommand();
-//  motorBL.executePreparedCommand();
-//  motorBR.executePreparedCommand();
-  motorFL.step(100);
-  delay(100000);
-  motorFL.step(0);
-  delay(100000);
+  motorFL.executePreparedCommand();
+  motorFR.executePreparedCommand();
+  motorBL.executePreparedCommand();
+  motorBR.executePreparedCommand();
 }
 
 void receiveEvent(int howMany) {
