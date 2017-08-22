@@ -14,6 +14,7 @@ void setup() {
 }
 
 void loop() {
+  // this executes if a command has been flagged/prepared
   motor.executePreparedCommand();
 }
 
