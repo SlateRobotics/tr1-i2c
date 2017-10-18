@@ -22,37 +22,45 @@ void setup() {
 
 void loop() {
   // these execute if a command has been flagged/prepared
-  motorFL.executePreparedCommand();
-  motorFR.executePreparedCommand();
-  motorBL.executePreparedCommand();
-  motorBR.executePreparedCommand();
+//  motorFL.executePreparedCommand();
+//  motorFR.executePreparedCommand();
+//  motorBL.executePreparedCommand();
+//  motorBR.executePreparedCommand();
+  motorFL.step(100);
+  delay(10000);
+  motorFL.step(0);
+  delay(1000);
+  motorFL.step(-100);
+  delay(10000);
+  motorFL.step(0);
+  delay(1000);
 }
 
 void receiveEvent(int howMany) {
-  int mode = Wire.read();
-  while (Wire.available()) {
-    int id = Wire.read();
-    int value = Wire.read();
-    int dir = Wire.read();
-    int duration = Wire.read();
-    duration = duration * 10;
-
-    int motorId = id;
-    int motorStep = value;
-    int motorStepDuration = duration;
-    if (dir == 1) {
-      motorStep = motorStep * -1;
-    }
-
-    if (id == 1) {
-      motorFL.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 2) {
-      motorFR.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 3) {
-      motorBL.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 4) {
-      motorBR.prepareCommand(motorStep, motorStepDuration);
-    }
-  }
+//  int mode = Wire.read();
+//  while (Wire.available()) {
+//    int id = Wire.read();
+//    int value = Wire.read();
+//    int dir = Wire.read();
+//    int duration = Wire.read();
+//    duration = duration * 10;
+//
+//    int motorId = id;
+//    int motorStep = value;
+//    int motorStepDuration = duration;
+//    if (dir == 1) {
+//      motorStep = motorStep * -1;
+//    }
+//
+//    if (id == 1) {
+//      motorFL.prepareCommand(motorStep, motorStepDuration);
+//    } else if (id == 2) {
+//      motorFR.prepareCommand(motorStep, motorStepDuration);
+//    } else if (id == 3) {
+//      motorBL.prepareCommand(motorStep, motorStepDuration);
+//    } else if (id == 4) {
+//      motorBR.prepareCommand(motorStep, motorStepDuration);
+//    }
+//  }
 }
 
