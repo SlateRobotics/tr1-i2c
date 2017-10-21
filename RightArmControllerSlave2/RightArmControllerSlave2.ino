@@ -3,29 +3,23 @@
 
 // front-left, front-right, etc -- from robot's perspective
 // Motor::Motor(int id, int pinEnable, int pinDrive1, int pinDrive2);
-Motor motorFL(1, 2, 3, 4);
-Motor motorFR(2, 5, 6, 7);
-Motor motorBL(3, 8, 9, 10);
-Motor motorBR(4, 11, 12, 13);
+Motor motorForearmRoll(1, 2, 3, 4);
+Motor motorWristTilt(2, 5, 6, 7);
 
 void setup() {
-  Wire.begin(0x70);
+  Wire.begin(0x73);
   Wire.onReceive(receiveEvent);
   Serial.begin(115200);
   Serial.println("Ready");
 
-  motorFL.setUp();
-  motorFR.setUp();
-  motorBL.setUp();
-  motorBR.setUp();
+  motorForearmRoll.setUp();
+  motorWristTilt.setUp();
 }
 
 void loop() {
   // these execute if a command has been flagged/prepared
-  motorFL.executePreparedCommand();
-  motorFR.executePreparedCommand();
-  motorBL.executePreparedCommand();
-  motorBR.executePreparedCommand();
+  motorForearmRoll.executePreparedCommand();
+  motorWristTilt.executePreparedCommand();
 }
 
 void receiveEvent(int howMany) {
@@ -36,7 +30,7 @@ void receiveEvent(int howMany) {
     int dir = Wire.read();
     int duration = Wire.read();
     duration = duration * 10;
-
+    
     int motorId = id;
     int motorStep = value;
     int motorStepDuration = duration;
@@ -45,13 +39,9 @@ void receiveEvent(int howMany) {
     }
 
     if (id == 1) {
-      motorFL.prepareCommand(motorStep, motorStepDuration);
+      motorForearmRoll.prepareCommand(motorStep, motorStepDuration);
     } else if (id == 2) {
-      motorFR.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 3) {
-      motorBL.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 4) {
-      motorBR.prepareCommand(motorStep, motorStepDuration);
+      motorWristTilt.prepareCommand(motorStep, motorStepDuration);
     }
   }
 }
