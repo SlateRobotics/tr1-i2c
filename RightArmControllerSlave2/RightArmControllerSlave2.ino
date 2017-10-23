@@ -1,3 +1,4 @@
+#include <Servo.h>
 #include <Wire.h>
 #include "Motor.h"
 
@@ -5,6 +6,7 @@
 // Motor::Motor(int id, int pinEnable, int pinDrive1, int pinDrive2);
 Motor motorForearmRoll(1, 2, 3, 4);
 Motor motorWristTilt(2, 5, 6, 7);
+Servo servoGripper;
 
 void setup() {
   Wire.begin(0x73);
@@ -14,6 +16,7 @@ void setup() {
 
   motorForearmRoll.setUp();
   motorWristTilt.setUp();
+  servoGripper.attach(8);
 }
 
 void loop() {
@@ -42,6 +45,8 @@ void receiveEvent(int howMany) {
       motorForearmRoll.prepareCommand(motorStep, motorStepDuration);
     } else if (id == 2) {
       motorWristTilt.prepareCommand(motorStep, motorStepDuration);
+    } else if (id == 3) {
+      servoGripper.write(motorStep);
     }
   }
 }

@@ -32,7 +32,7 @@ void Motor::forward(int speed = 100) {
   // given speed should be a percentage of total speed so that we can tell it to start slowly
   this->motorSpeed = speed;
   if (speed < 20) {
-    analogWrite(pinEnable, LOW);
+    analogWrite(pinEnable, HIGH);
     digitalWrite(pinDrive1, LOW);
     digitalWrite(pinDrive2, LOW);
   } else {
@@ -48,7 +48,7 @@ void Motor::forward(int speed = 100) {
 void Motor::backward(int speed = 100) {
   this->motorSpeed = speed;
   if (speed < 20) {
-    analogWrite(pinEnable, LOW);
+    analogWrite(pinEnable, HIGH);
     digitalWrite(pinDrive1, LOW);
     digitalWrite(pinDrive2, LOW);
   } else {
