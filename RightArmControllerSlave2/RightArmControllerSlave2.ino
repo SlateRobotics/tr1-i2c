@@ -4,9 +4,13 @@
 
 // front-left, front-right, etc -- from robot's perspective
 // Motor::Motor(int id, int pinEnable, int pinDrive1, int pinDrive2);
-Motor motorForearmRoll(1, 2, 3, 4);
-Motor motorWristTilt(2, 5, 6, 7);
+Motor motorForearmRoll(5, 2, 3, 4);
+Motor motorWristTilt(6, 5, 6, 7);
+Servo servoWrist;
 Servo servoGripper;
+
+int servoWristValue = 55;
+int servoGripperValue = 55;
 
 void setup() {
   Wire.begin(0x73);
@@ -16,13 +20,16 @@ void setup() {
 
   motorForearmRoll.setUp();
   motorWristTilt.setUp();
-  servoGripper.attach(8);
+  servoWrist.attach(8);
+  servoGripper.attach(9);
 }
 
 void loop() {
   // these execute if a command has been flagged/prepared
   motorForearmRoll.executePreparedCommand();
   motorWristTilt.executePreparedCommand();
+  servoWrist.write(servoWristValue);
+  servoGripper.write(servoGripperValue);
 }
 
 void receiveEvent(int howMany) {
@@ -41,12 +48,14 @@ void receiveEvent(int howMany) {
       motorStep = motorStep * -1;
     }
 
-    if (id == 1) {
+    if (id == 5) {
       motorForearmRoll.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 2) {
+    } else if (id == 6) {
       motorWristTilt.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 3) {
-      servoGripper.write(motorStep);
+    } else if (id == 7) {
+      servoWristValue = motorStep;
+    } else if (id == 8) {
+      servoGripperValue = motorStep;
     }
   }
 }

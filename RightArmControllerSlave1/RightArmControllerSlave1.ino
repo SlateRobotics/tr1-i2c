@@ -12,6 +12,7 @@ void setup() {
   Wire.begin(0x72);
   Wire.onReceive(receiveEvent);
   Serial.begin(115200);
+  Serial.print(0x72);
   Serial.println("Ready");
 
   motorShoulderPan.setUp();
@@ -29,7 +30,7 @@ void loop() {
 }
 
 void receiveEvent(int howMany) {
-  int mode = Wire.read();
+  int address = Wire.read();
   while (Wire.available()) {
     int id = Wire.read();
     int value = Wire.read();
