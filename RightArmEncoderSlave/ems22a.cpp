@@ -58,7 +58,7 @@ int Ems22a::readPosition(bool reverseAngle = false) {
   digitalWrite(PIN_CLOCK, LOW);
   digitalWrite(PIN_CLOCK, HIGH);
 
-  if (reverseAngle == false) {
+  if (reverseAngle == true) {
     pos = abs(1024 - pos);
   }
 

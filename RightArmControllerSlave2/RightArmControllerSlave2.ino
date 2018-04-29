@@ -9,8 +9,8 @@ Motor motorWristTilt(6, 5, 6, 7);
 Servo servoWrist;
 Servo servoGripper;
 
-int servoWristValue = 55;
-int servoGripperValue = 55;
+int servoWristValue = 50;
+int servoGripperValue = 40;
 
 void setup() {
   Wire.begin(0x73);
@@ -28,8 +28,16 @@ void loop() {
   // these execute if a command has been flagged/prepared
   motorForearmRoll.executePreparedCommand();
   motorWristTilt.executePreparedCommand();
+
   servoWrist.write(servoWristValue);
   servoGripper.write(servoGripperValue);
+  
+  //servoWristValue++;
+  //servoGripperValue++;
+  //if (servoWristValue > 100) servoWristValue = 50;
+  //if (servoGripperValue > 65) servoGripperValue = 0;
+
+  delay(50);
 }
 
 void receiveEvent(int howMany) {

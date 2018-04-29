@@ -1,12 +1,22 @@
 #include <Wire.h>
 #include "Motor.h"
+#include "Interrupt.h"
+#include "Encoder.h"
 
 // front-left, front-right, etc -- from robot's perspective
 // Motor::Motor(int id, int pinEnable, int pinDrive1, int pinDrive2);
-Motor motorFL(1, 2, 3, 4);
-Motor motorFR(2, 5, 6, 7);
-Motor motorBL(3, 8, 9, 10);
-Motor motorBR(4, 11, 12, 13);
+Motor motorFL(1, 4, 5, 6);
+Motor motorFR(2, 10, 11, 12);
+Motor motorBL(3, 7, 8, 9);
+Motor motorBR(4, 13, 22, 23);
+Motor motorLA(5, 26, 25, 24);
+Encoder encoderBR(6, 19, 27);
+Encoder encoderFR(7, 18, 28);
+Encoder encoderFL(8, 2, 29);
+Encoder encoderBL(9, 3, 30);
+
+unsigned long startTime = millis();
+int mode = 0;
 
 void setup() {
   Wire.begin(0x70);
@@ -18,6 +28,11 @@ void setup() {
   motorFR.setUp();
   motorBL.setUp();
   motorBR.setUp();
+  motorLA.setUp();
+  encoderBR.setUp(interruptBR);
+  encoderFR.setUp(interruptFR);
+  encoderBL.setUp(interruptBL);
+  encoderFL.setUp(interruptFL);
 }
 
 void loop() {
@@ -26,6 +41,34 @@ void loop() {
   motorFR.executePreparedCommand();
   motorBL.executePreparedCommand();
   motorBR.executePreparedCommand();
+  motorLA.executePreparedCommand();
+  
+  /*Motor motor = motorLA;
+  
+  if (mode == 0) {
+    motor.step(100);
+  } else if (mode == 1) {
+    motor.step(0);
+  } else if (mode == 2) {
+    motor.step(-100);
+  } else if (mode == 3) {
+    motor.step(0);
+  }
+  
+  unsigned long currentTime = millis();
+  unsigned long elapsedTime = currentTime - startTime;
+  if (elapsedTime < 1000) {
+    mode = 0;
+  } else if (elapsedTime > 1000 && elapsedTime < 3000)  {
+    mode = 1;
+  } else if (elapsedTime > 3000 && elapsedTime < 4000) {
+    mode = 2;
+  } else if (elapsedTime > 4000 && elapsedTime < 5000) {
+    mode = 3;
+    startTime = millis();
+  }
+  
+  Serial.println(interruptBL_pulses);*/
 }
 
 void receiveEvent(int howMany) {
