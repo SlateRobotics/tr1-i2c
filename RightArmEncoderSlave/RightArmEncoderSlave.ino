@@ -17,32 +17,24 @@ int jointEncoders[jointEncoderCount][10] = {
 void requestEvent() {
   int motorId = Wire.read();
   int encoderIndex = motorId - 1;
+  uint32_t state = jointState[encoderIndex];
 
-  int bufferSize = 4;
-  uint8_t buf[bufferSize];
-  uint16_t state = abs(jointState[encoderIndex]);
-  for (int i = 0; i < 4; i++) {
-    if (state > 255) {
-      buf[i] = 255;
-      state = state - 255;
-    } else if (state <= 255 && state > 0) {
-      buf[i] = state;
-      state = 0;
-    } else if (state <= 0) {
-      buf[i] = 0;
-    }
-  }
-
-  //if (motorId == 5) Serial.println(state);
-  if (motorId == 5) Serial.println(buf[0] + buf[1] + buf[2] + buf[3]);
+  if (motorId == 4) Serial.println(state);
   
+  // handle signed ints via offset binary method
+  if (state > 2147483647) state = 2147483647;
+  if (state < -2147483648) state = -2147483648;
+  int bufferSize = 4;
+  int32_t excessK = pow(256, bufferSize)/2;
+  uint32_t data = state + excessK;
+  
+  byte dataBuffer[4] = {0, 0, 0, 0};
+  dataBuffer[0] = data >> 24;
+  dataBuffer[1] = data >> 16;
+  dataBuffer[2] = data >> 8;
+  dataBuffer[3] = data;
 
-//  Serial.print("motor: ");
-//  Serial.print(motorId);
-//  Serial.print("; pos: ");
-//  Serial.println(buf[encoderIndex]);
-
-  Wire.write(buf, bufferSize);
+  Wire.write(dataBuffer, 4);
 }
 
 void receiveEvent(int howMany) {

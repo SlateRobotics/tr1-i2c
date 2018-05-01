@@ -5,21 +5,85 @@
 
 // front-left, front-right, etc -- from robot's perspective
 // Motor::Motor(int id, int pinEnable, int pinDrive1, int pinDrive2);
-Motor motorFL(1, 4, 5, 6);
-Motor motorFR(2, 10, 11, 12);
-Motor motorBL(3, 7, 8, 9);
-Motor motorBR(4, 13, 22, 23);
-Motor motorLA(5, 26, 25, 24);
-Encoder encoderBR(6, 19, 27);
-Encoder encoderFR(7, 18, 28);
-Encoder encoderFL(8, 2, 29);
-Encoder encoderBL(9, 3, 30);
+Motor motorFL(9, 4, 5, 6);
+Motor motorFR(10, 10, 11, 12);
+Motor motorBL(11, 7, 8, 9);
+Motor motorBR(12, 13, 22, 23);
+Motor motorLA(13, 26, 25, 24);
+Encoder encoderFL(9, 2, 29);
+Encoder encoderFR(10, 18, 28);
+Encoder encoderBL(11, 3, 30);
+Encoder encoderBR(12, 19, 27);
 
-unsigned long startTime = millis();
-int mode = 0;
+int flpulses = 0;
+int frpulses = 0;
+int blpulses = 0;
+int brpulses = 0;
+
+void requestEvent() {
+  int motorId = Wire.read();
+  
+  int32_t state = 0;
+  if (motorId == 9) {
+    state = flpulses;
+  } else if (motorId == 10) {
+    state = frpulses;
+  } else if (motorId == 11) {
+    state = blpulses;
+  } else if (motorId == 12) {
+    state = brpulses;
+  }
+
+  // handle signed ints via offset binary method
+  if (state > 2147483647) state = 2147483647;
+  if (state < -2147483648) state = -2147483648;
+  int bufferSize = 4;
+  int32_t excessK = pow(256, bufferSize)/2;
+  uint32_t data = state + excessK;
+  
+  byte dataBuffer[4] = {0, 0, 0, 0};
+  dataBuffer[0] = data >> 24;
+  dataBuffer[1] = data >> 16;
+  dataBuffer[2] = data >> 8;
+  dataBuffer[3] = data;
+
+  Wire.write(dataBuffer, 4);
+}
+
+void receiveEvent(int howMany) {
+  if (howMany == 1) return; // it's a request event
+  int mode = Wire.read();
+  while (Wire.available()) {
+    int id = Wire.read();
+    int value = Wire.read();
+    int dir = Wire.read();
+    int duration = Wire.read();
+    duration = duration * 10;
+
+    int motorId = id;
+    int motorStep = value;
+    int motorStepDuration = duration;
+    if (dir == 1) {
+      motorStep = motorStep * -1;
+    }
+
+    if (id == 9) {
+      motorFL.prepareCommand(motorStep, motorStepDuration);
+    } else if (id == 10) {
+      motorFR.prepareCommand(motorStep, motorStepDuration);
+    } else if (id == 11) {
+      motorBL.prepareCommand(motorStep, motorStepDuration);
+    } else if (id == 12) {
+      motorBR.prepareCommand(motorStep, motorStepDuration);
+    } else if (id == 13) {
+      motorLA.prepareCommand(motorStep, motorStepDuration);
+    }
+  }
+}
 
 void setup() {
   Wire.begin(0x70);
+  Wire.onRequest(requestEvent);
   Wire.onReceive(receiveEvent);
   Serial.begin(115200);
   Serial.println("Ready");
@@ -42,60 +106,11 @@ void loop() {
   motorBL.executePreparedCommand();
   motorBR.executePreparedCommand();
   motorLA.executePreparedCommand();
-  
-  /*Motor motor = motorLA;
-  
-  if (mode == 0) {
-    motor.step(100);
-  } else if (mode == 1) {
-    motor.step(0);
-  } else if (mode == 2) {
-    motor.step(-100);
-  } else if (mode == 3) {
-    motor.step(0);
-  }
-  
-  unsigned long currentTime = millis();
-  unsigned long elapsedTime = currentTime - startTime;
-  if (elapsedTime < 1000) {
-    mode = 0;
-  } else if (elapsedTime > 1000 && elapsedTime < 3000)  {
-    mode = 1;
-  } else if (elapsedTime > 3000 && elapsedTime < 4000) {
-    mode = 2;
-  } else if (elapsedTime > 4000 && elapsedTime < 5000) {
-    mode = 3;
-    startTime = millis();
-  }
-  
-  Serial.println(interruptBL_pulses);*/
+
+  flpulses = interruptFL_pulses;
+  frpulses = interruptFR_pulses;
+  blpulses = interruptBL_pulses;
+  brpulses = interruptBR_pulses;
+
+  //Serial.println(flpulses);
 }
-
-void receiveEvent(int howMany) {
-  int mode = Wire.read();
-  while (Wire.available()) {
-    int id = Wire.read();
-    int value = Wire.read();
-    int dir = Wire.read();
-    int duration = Wire.read();
-    duration = duration * 10;
-
-    int motorId = id;
-    int motorStep = value;
-    int motorStepDuration = duration;
-    if (dir == 1) {
-      motorStep = motorStep * -1;
-    }
-
-    if (id == 1) {
-      motorFL.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 2) {
-      motorFR.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 3) {
-      motorBL.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 4) {
-      motorBR.prepareCommand(motorStep, motorStepDuration);
-    }
-  }
-}
-

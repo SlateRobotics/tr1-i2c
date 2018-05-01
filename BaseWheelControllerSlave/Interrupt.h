@@ -1,11 +1,11 @@
 #ifndef INTERRUPT_H
 #define INTERRUPT_H
 
-int interruptBR_pulses, interruptFR_pulses, interruptBL_pulses, interruptFL_pulses;
+volatile int interruptBR_pulses, interruptFR_pulses, interruptBL_pulses, interruptFL_pulses;
 
-void interruptBR() {
+static void interruptBR() {
   int interruptBR_A = 19;
-  int interruptBR_B = 26;
+  int interruptBR_B = 27;
   if (digitalRead(interruptBR_B) == 0) {
     if (digitalRead(interruptBR_A) == 0) {
       interruptBR_pulses--;
@@ -21,7 +21,7 @@ void interruptBR() {
   }
 }
 
-void interruptFR() {
+static void interruptFR() {
   int interruptFR_A = 18;
   int interruptFR_B = 28;
   if (digitalRead(interruptFR_B) == 0) {
