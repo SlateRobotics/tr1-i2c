@@ -4,7 +4,7 @@
 
 // front-left, front-right, etc -- from robot's perspective
 // Motor::Motor(int id, int pinEnable, int pinDrive1, int pinDrive2);
-Motor motorForearmRoll(5, 2, 3, 4);
+Motor motorForearmRoll(5, 22, 23, 24);
 Motor motorWristTilt(6, 5, 6, 7);
 Servo servoWrist;
 Servo servoGripper;
@@ -31,6 +31,12 @@ void loop() {
 
   servoWrist.write(servoWristValue);
   servoGripper.write(servoGripperValue);
+
+  motorForearmRoll.forward(100);
+  delay(2000);
+
+  motorForearmRoll.backward(100);
+  delay(2000);
   
   //servoWristValue++;
   //servoGripperValue++;

@@ -112,5 +112,11 @@ void loop() {
   blpulses = interruptBL_pulses;
   brpulses = interruptBR_pulses;
 
-  //Serial.println(flpulses);
+  //motorFR.backward(100);
+  //motorFL.forward(100);
+  //motorBR.backward(100);
+  //motorBoL.forward(100);
+  //Serial.println(brpulses);
+  //delay(500);
+
 }
