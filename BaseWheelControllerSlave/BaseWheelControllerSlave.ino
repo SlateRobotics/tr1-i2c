@@ -5,15 +5,15 @@
 
 // front-left, front-right, etc -- from robot's perspective
 // Motor::Motor(int id, int pinEnable, int pinDrive1, int pinDrive2);
-Motor motorFL(9, 4, 5, 6);
-Motor motorFR(10, 10, 11, 12);
-Motor motorBL(11, 7, 8, 9);
-Motor motorBR(12, 13, 22, 23);
-Motor motorLA(13, 26, 25, 24);
-Encoder encoderFL(9, 2, 29);
-Encoder encoderFR(10, 18, 28);
-Encoder encoderBL(11, 3, 30);
-Encoder encoderBR(12, 19, 27);
+Motor motorFL(9, 5, 4, 7);
+Motor motorFR(10, 6, 8, 12);
+Motor motorBL(11, 9, 13, 24);
+Motor motorBR(12, 10, 25, 26);
+Motor motorLA(13, 11, 29, 30);
+Encoder encoderFL(9, 2, 22);
+Encoder encoderFR(10, 3, 23);
+Encoder encoderBL(11, 19, 28);
+Encoder encoderBR(12, 18, 27);
 
 int flpulses = 0;
 int frpulses = 0;
@@ -78,6 +78,7 @@ void receiveEvent(int howMany) {
     } else if (id == 13) {
       motorLA.prepareCommand(motorStep, motorStepDuration);
     }
+    Serial.println(id);
   }
 }
 

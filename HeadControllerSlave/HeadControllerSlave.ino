@@ -10,7 +10,7 @@ Ace128 encoderHeadPan(22, 23, 24, 25, 26, 27, 28, 29, 30);
 Ace128 encoderHeadTilt(32, 33, 34, 35, 36, 37, 38, 39, 40);
 
 void setup() {
-  Wire.begin(0x71);
+  Wire.begin(0x73);
   Wire.onRequest(requestEvent);
   Wire.onReceive(receiveEvent);
   Serial.begin(115200);
@@ -21,14 +21,13 @@ void setup() {
   encoderHeadPan.setUp();
   encoderHeadTilt.setUp();
 }
+
 void loop() {
   // these execute if a command has been flagged/prepared
   motorHeadPan.executePreparedCommand();
   motorHeadTilt.executePreparedCommand();
   jointState[0] = encoderHeadPan.readPosition();
   jointState[1] = encoderHeadTilt.readPosition();
-  motorHeadPan.forward(100);
-  delay(500);
 }
 
 void requestEvent() {
@@ -73,6 +72,8 @@ void receiveEvent(int howMany) {
     if (dir == 1) {
       motorStep = motorStep * -1;
     }
+
+    Serial.println(motorId);
 
     if (id == 14) {
       motorHeadPan.prepareCommand(motorStep, motorStepDuration);
