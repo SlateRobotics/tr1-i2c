@@ -15,10 +15,18 @@ Encoder encoderFR(10, 3, 23);
 Encoder encoderBL(11, 19, 28);
 Encoder encoderBR(12, 18, 27);
 
+union ArrayToInteger {
+  byte array[2];
+  uint16_t integer;
+};
+
+int pins[] = {32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47};
+
 int flpulses = 0;
 int frpulses = 0;
 int blpulses = 0;
 int brpulses = 0;
+int lapulses = 0;
 
 void requestEvent() {
   int motorId = Wire.read();
@@ -32,6 +40,8 @@ void requestEvent() {
     state = blpulses;
   } else if (motorId == 12) {
     state = brpulses;
+  } else if (motorId == 13) {
+    state = lapulses;
   }
 
   // handle signed ints via offset binary method
@@ -78,7 +88,6 @@ void receiveEvent(int howMany) {
     } else if (id == 13) {
       motorLA.prepareCommand(motorStep, motorStepDuration);
     }
-    Serial.println(id);
   }
 }
 
@@ -98,6 +107,10 @@ void setup() {
   encoderFR.setUp(interruptFR);
   encoderBL.setUp(interruptBL);
   encoderFL.setUp(interruptFL);
+  
+  for (int i = 0; i < 16; i++) {
+    pinMode(pins[i], INPUT);
+  }
 }
 
 void loop() {
@@ -113,11 +126,27 @@ void loop() {
   blpulses = interruptBL_pulses;
   brpulses = interruptBR_pulses;
 
-  //motorFR.backward(100);
-  //motorFL.forward(100);
-  //motorBR.backward(100);
-  //motorBoL.forward(100);
-  //Serial.println(brpulses);
-  //delay(500);
+  uint16_t laData = 0;
+
+  int b [16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  for (int i = 15; i >= 0; i--) {
+    b[i] = digitalRead(pins[i]);
+  }
+  
+  int result = 0;
+  for (int i = 0; i < 16; i++) {
+    int m = 0.5 + pow(2.0, i);
+    result += m * b[i];
+  }
+
+  lapulses = result - 1000;
+
+  Serial.print(flpulses);
+  Serial.print("; ");
+  Serial.print(frpulses);
+  Serial.print("; ");
+  Serial.print(blpulses);
+  Serial.print("; ");
+  Serial.println(brpulses);
 
 }

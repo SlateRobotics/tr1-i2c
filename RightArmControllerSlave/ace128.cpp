@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Ace128.h"
+#include "ace128.h"
 
 struct DATARAW
 {
@@ -133,4 +133,3 @@ int Ace128::readPosition(bool reverseAngle = false) {
 
   return pos;
 }
-

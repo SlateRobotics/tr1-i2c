@@ -6,8 +6,8 @@ int jointState[] = {0,0};
 // Motor::Motor(int id, int pinEnable, int pinDrive1, int pinDrive2);
 Motor motorHeadPan(14, 2, 3, 4);
 Motor motorHeadTilt(15, 5, 6, 7);
-Ace128 encoderHeadPan(22, 23, 24, 25, 26, 27, 28, 29, 30);
-Ace128 encoderHeadTilt(32, 33, 34, 35, 36, 37, 38, 39, 40);
+Ace128 encoderHeadPan(22, 24, 26, 28, 23, 25, 27, 29, 0);
+Ace128 encoderHeadTilt(32, 34, 36, 38, 33, 35, 37, 39, 0);
 
 void setup() {
   Wire.begin(0x73);
@@ -73,8 +73,6 @@ void receiveEvent(int howMany) {
       motorStep = motorStep * -1;
     }
 
-    Serial.println(motorId);
-
     if (id == 14) {
       motorHeadPan.prepareCommand(motorStep, motorStepDuration);
     } else if (id == 15) {
@@ -82,4 +80,3 @@ void receiveEvent(int howMany) {
     }
   }
 }
-

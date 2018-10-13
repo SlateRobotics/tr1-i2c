@@ -1,16 +1,19 @@
 #include <Servo.h>
 #include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 #include "Motor.h"
 #include "ace128.h"
 #include "ems22a.h"
 
+LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
+
 // Motor::Motor(int id, int pinEnable, int pinDrive1, int pinDrive2);
-Motor motorShoulderPan(16, 2, 22, 23);
-Motor motorShoulderTilt(17, 3, 24, 25);
-Motor motorBicepRoll(18, 4, 26, 27);
-Motor motorElbowTilt(19, 5, 28, 29);
-Motor motorForearmRoll(20, 6, 30, 31);
-Motor motorWristTilt(21, 7, 32, 33);
+Motor motorShoulderPan(1, 2, 22, 23);
+Motor motorShoulderTilt(2, 3, 24, 25);
+Motor motorBicepRoll(3, 4, 26, 27);
+Motor motorElbowTilt(4, 5, 28, 29);
+Motor motorForearmRoll(5, 6, 30, 31);
+Motor motorWristTilt(6, 7, 32, 33);
 
 Servo servoWrist;
 Servo servoGripper;
@@ -35,7 +38,7 @@ int jointEncoders[jointEncoderCount][10] = {
 
 void requestEvent() {
   int motorId = Wire.read();
-  int encoderIndex = motorId - 16;
+  int encoderIndex = motorId - 1;
   uint32_t state = jointState[encoderIndex];
   
   // handle signed ints via offset binary method
@@ -71,28 +74,28 @@ void receiveEvent(int howMany) {
       motorStep = motorStep * -1;
     }
 
-    if (id == 16) {
+    if (id == 1) {
       motorShoulderPan.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 17) {
+    } else if (id == 2) {
       motorShoulderTilt.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 18) {
+    } else if (id == 3) {
       motorBicepRoll.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 19) {
+    } else if (id == 4) {
       motorElbowTilt.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 20) {
+    } else if (id == 5) {
       motorForearmRoll.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 21) {
+    } else if (id == 6) {
       motorWristTilt.prepareCommand(motorStep, motorStepDuration);
-    } else if (id == 22) {
+    } else if (id == 7) {
       servoWristValue = motorStep;
-    } else if (id == 23) {
+    } else if (id == 8) {
       servoGripperValue = motorStep;
     }
   }
 }
 
 void setup() {
-  Wire.begin(0x72);
+  Wire.begin(0x71);
   Wire.onRequest(requestEvent);
   Wire.onReceive(receiveEvent);
   Serial.begin(115200);
@@ -106,6 +109,9 @@ void setup() {
   motorWristTilt.setUp();
   servoWrist.attach(servoWristPin);
   servoGripper.attach(servoGripperPin);
+
+  lcd.begin(16, 2);
+  lcd.backlight();
   
   for (int i = 0; i < jointEncoderCount; i++) {
     int encoderType = jointEncoders[i][0];
@@ -127,13 +133,14 @@ void setup() {
   }
 }
 
+int lcdCount = 5;
+int lcdRefresh = 5;
+
+int motorDir = 0;
+int motorCount = 100;
+int motorRefresh = 100;
+
 void loop() {
-  motorShoulderPan.executePreparedCommand();
-  motorShoulderTilt.executePreparedCommand();
-  motorBicepRoll.executePreparedCommand();
-  motorElbowTilt.executePreparedCommand();
-  motorForearmRoll.executePreparedCommand();
-  motorWristTilt.executePreparedCommand();
 
   servoWrist.write(servoWristValue);
   servoGripper.write(servoGripperValue);
@@ -155,6 +162,50 @@ void loop() {
     } else if (encoderType == 1) {
       jointState[i] = Ace128(p1, p2, p3, p4, p5, p6, p7, p8).readPosition(reversePosition);
     }
+  }
+
+  if (motorCount > motorRefresh) {
+    motorCount = 0;
+    if (motorDir == 1) {
+      motorDir = 0;
+      motorShoulderPan.forward(100);
+      motorShoulderTilt.forward(100);
+      motorBicepRoll.forward(100);
+      motorElbowTilt.forward(100);
+      motorForearmRoll.forward(100);
+      motorWristTilt.forward(100);
+    } else {
+      motorDir = 1;
+      motorShoulderPan.backward(100);
+      motorShoulderTilt.backward(100);
+      motorBicepRoll.backward(100);
+      motorElbowTilt.backward(100);
+      motorForearmRoll.backward(100);
+      motorWristTilt.backward(100);
+    }
+  } else {
+    motorCount++;
+  }
+
+  if (lcdCount > lcdRefresh) {
+    lcdCount = 0;
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(motorDir);
+    lcd.print(":");
+    lcd.print(jointState[0]);
+    lcd.print(",");
+    lcd.print(jointState[1]);
+    lcd.print(",");
+    lcd.print(jointState[2]);
+    lcd.setCursor(0,1);
+    lcd.print(jointState[3]);
+    lcd.print(",");
+    lcd.print(jointState[4]);
+    lcd.print(",");
+    lcd.print(jointState[5]);
+  } else {
+    lcdCount++;
   }
 
   delay(50);

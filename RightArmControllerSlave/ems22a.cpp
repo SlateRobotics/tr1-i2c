@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Ems22a.h"
+#include "ems22a.h"
 
 Ems22a::Ems22a() {
 }
@@ -64,4 +64,3 @@ int Ems22a::readPosition(bool reverseAngle = false) {
 
   return pos;
 }
-

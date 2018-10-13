@@ -34,7 +34,6 @@ int jointEncoders[jointEncoderCount][10] = {
 };
 
 void requestEvent() {
-  Serial.println("2");
   int motorId = Wire.read();
   int encoderIndex = motorId - 1;
   uint32_t state = jointState[encoderIndex];
@@ -56,7 +55,6 @@ void requestEvent() {
 }
 
 void receiveEvent(int howMany) {
-  Serial.println("1");
   if (howMany == 1) return; // it's a request event
   int mode = Wire.read();
   while (Wire.available()) {
@@ -137,14 +135,6 @@ void loop() {
   motorForearmRoll.executePreparedCommand();
   motorWristTilt.executePreparedCommand();
 
-  /*int stepValue = 100;
-  motorShoulderPan.step(stepValue);
-  motorShoulderTilt.step(stepValue);
-  motorBicepRoll.step(stepValue);
-  motorElbowTilt.step(stepValue);
-  motorForearmRoll.step(stepValue);
-  motorWristTilt.step(stepValue);*/
-
   servoWrist.write(servoWristValue);
   servoGripper.write(servoGripperValue);
   
@@ -162,13 +152,10 @@ void loop() {
     
     if (encoderType == 0) {
       jointState[i] = Ems22a(p1, p2, p3, p4, p5, p6).readPosition(reversePosition);
-      Serial.print(jointState[i]);
-      Serial.print(", ");
     } else if (encoderType == 1) {
       jointState[i] = Ace128(p1, p2, p3, p4, p5, p6, p7, p8).readPosition(reversePosition);
     }
   }
-  Serial.println("");
+
   delay(50);
 }
-
